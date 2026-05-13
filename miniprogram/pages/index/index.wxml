@@ -1,0 +1,89 @@
+<view class="page">
+  <view class="top">
+    <view>
+      <text class="eyebrow">{{user.name}}的成长记录</text>
+      <text class="title">{{user.name}}兴趣树</text>
+    </view>
+    <button class="login" bindtap="loginWithWechat">{{user.loggedIn ? '已微信登录' : '微信登录'}}</button>
+  </view>
+
+  <view class="tabs">
+    <button class="{{tab == 'tree' ? 'active' : ''}}" bindtap="switchTab" data-tab="tree">兴趣树</button>
+    <button class="{{tab == 'news' ? 'active' : ''}}" bindtap="switchTab" data-tab="news">新闻</button>
+    <button class="{{tab == 'settings' ? 'active' : ''}}" bindtap="switchTab" data-tab="settings">设置</button>
+  </view>
+
+  <view wx:if="{{tab == 'tree'}}" class="tree-panel">
+    <canvas class="tree-canvas" type="2d" id="treeCanvas"></canvas>
+    <view class="stats">
+      <view><text>{{tree.totalDays}}</text><text>整理天数</text></view>
+      <view><text>{{tree.totalReads}}</text><text>阅读新闻</text></view>
+      <view><text>{{tree.totalFavorites}}</text><text>收藏新闻</text></view>
+      <view><text>{{branchCount}}</text><text>兴趣分支</text></view>
+    </view>
+    <view class="actions">
+      <button class="primary" bindtap="organizeNews">整理今日新闻</button>
+      <button class="secondary" bindtap="saveTreeImage">保存树照片</button>
+    </view>
+  </view>
+
+  <view wx:if="{{tab == 'news'}}">
+    <view class="actions sticky">
+      <button class="primary" bindtap="organizeNews">整理今日新闻</button>
+    </view>
+    <view wx:if="{{news.length == 0}}" class="empty">还没有新闻，先整理今日新闻。</view>
+    <view wx:for="{{news}}" wx:key="id" class="news-card" bindtap="readNews" data-id="{{item.id}}">
+      <view class="news-top">
+        <text class="heat">热度 {{item.heatScore}}</text>
+        <button catchtap="toggleFavorite" data-id="{{item.id}}">{{item.favorite ? '已收藏' : '收藏'}}</button>
+      </view>
+      <text class="news-title">{{item.title}}</text>
+      <text class="summary">{{item.summary}}</text>
+      <view class="meta">
+        <text>{{item.source}}</text>
+        <text>{{item.read ? '已读' : '未读'}}</text>
+      </view>
+      <view class="tags">
+        <text wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+      </view>
+      <view class="points">
+        <text wx:for="{{item.keyPoints}}" wx:key="*this">- {{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{tab == 'settings'}}" class="settings">
+    <view class="section">
+      <text class="section-title">用户与树名</text>
+      <input value="{{user.name}}" bindinput="updateUserName" placeholder="输入用户名" />
+    </view>
+
+    <view class="section">
+      <text class="section-title">自定义标签</text>
+      <view class="add-row">
+        <input value="{{newTag}}" bindinput="inputTag" placeholder="例如：汽车" />
+        <button class="primary" bindtap="addTag">添加</button>
+      </view>
+      <view wx:for="{{tags}}" wx:key="id" class="setting-row">
+        <text>{{item.name}}</text>
+        <switch checked="{{item.enabled}}" bindchange="toggleTag" data-id="{{item.id}}" />
+        <button bindtap="removeTag" data-id="{{item.id}}">删除</button>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section-title">新闻来源</text>
+      <input value="{{newSourceName}}" bindinput="inputSourceName" placeholder="来源名称" />
+      <input value="{{newSourceUrl}}" bindinput="inputSourceUrl" placeholder="RSS / API / 热榜地址" />
+      <button class="primary full" bindtap="addSource">添加新闻来源</button>
+      <view wx:for="{{sources}}" wx:key="id" class="source-row">
+        <view>
+          <text>{{item.name}}</text>
+          <text>{{item.url || '本地示例源'}}</text>
+        </view>
+        <switch checked="{{item.enabled}}" bindchange="toggleSource" data-id="{{item.id}}" />
+        <button bindtap="removeSource" data-id="{{item.id}}">删除</button>
+      </view>
+    </view>
+  </view>
+</view>

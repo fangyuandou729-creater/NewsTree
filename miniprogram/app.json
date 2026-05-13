@@ -1,0 +1,13 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "NewsTree",
+    "navigationBarBackgroundColor": "#1f2a24",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f7f4ef"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}
